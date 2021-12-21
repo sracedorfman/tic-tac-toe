@@ -2,6 +2,8 @@
 const ticTacToeModel = {
 
     empty : '—',
+    player : 'X',
+    bot : 'O',
 
     stringToArray : function(strBoard) {
         const board = new Array(3).fill(0).map(() => new Array(3).fill('f'));
@@ -19,35 +21,97 @@ const ticTacToeModel = {
         return strBoard;
     },
 
-    getAIMove : function(board) {
+    getRandomAIMove : function(board) {
         let move = [Math.floor(Math.random() * 3), Math.floor(Math.random() * 3)];
-        while (board[move[0]][move[1]] != ticTacToeModel.empty) {
+        while (board[move[0]][move[1]] != this.empty) {
             move = [Math.floor(Math.random() * 3), Math.floor(Math.random() * 3)];
         }
         return move;
     },
 
-    checkForWin : function(board) {
-        const empty = ticTacToeModel.empty;
-        for (let i = 0; i < 3; i++) {
-            let temp = board[i][0];
-            if (temp == board[i][1] && temp == board[i][2] && temp != empty) return true;
-            temp = board[0][i];
-            if (temp == board[1][i] && temp == board[2][i] && temp != empty) return true;
-        }
-
-        const temp = board[1][1];
-        return ((board[0][0] == temp && temp == board[2][2] && temp != empty) ||
-                (board[0][2] == temp && temp == board[2][0] && temp != empty));
-    },
-
     checkGameOver : function(board) {
         for (let i = 0; i < 3; i++) {
             for (let j = 0; j < 3; j++) {
-                if (board[i][j] == ticTacToeModel.empty) return false;
+                if (board[i][j] == this.empty) return false;
             }
         }
         return true;
+    },
+
+    checkForWin : function(board) {
+        const empty = this.empty;
+        for (let i = 0; i < 3; i++) {
+            let temp = board[i][0];
+            if (temp == board[i][1] && temp == board[i][2] && temp != empty) {
+                if (temp == this.bot) return 10; else return -10;
+            }
+            temp = board[0][i];
+            if (temp == board[1][i] && temp == board[2][i] && temp != empty) {
+                if (temp == this.bot) return 10; else return -10;
+            }
+        }
+
+        const temp = board[1][1];
+        if ((board[0][0] == temp && temp == board[2][2] && temp != empty) ||
+            (board[0][2] == temp && temp == board[2][0] && temp != empty)) {
+                if (temp == this.bot) return 10; else return -10;
+            }
+        return 0;
+    },
+
+    minimax : function(board, depth, isMax) {
+        const score = this.checkForWin(board);
+
+        if (this.checkGameOver(board)) return score;
+
+        if (isMax) {
+            let best = -1000;
+            for (let i = 0; i < 3; i++) {
+                for (let j = 0; j < 3; j++) {
+                    if (board[i][j] == this.empty) {
+                        board[i][j] = this.bot;
+                        best = Math.max(best, this.minimax(board, depth + 1, !isMax));
+                        board[i][j] = this.empty;
+                    }
+                }
+            }
+            return best;
+        } else {
+            let best = 1000;
+            for (let i = 0; i < 3; i++) {
+                for (let j = 0; j < 3; j++) {
+                    if (board[i][j] == this.empty) {
+                        board[i][j] = this.player;
+                        best = Math.min(best, this.minimax(board, depth + 1, !isMax));
+                        board[i][j] = this.empty;
+                    }
+                }
+            }
+            return best;
+        }
+    },
+
+    findBestAIMove : function(board) {
+        let bestVal = -1000;
+        const bestMove = [-1, -1];
+
+        for (let i = 0; i < 3; i++) {
+            for (let j = 0; j < 3; j++) {
+                if (board[i][j] == this.empty) {
+                    board[i][j] = this.bot;
+                    const moveVal = this.minimax(board, 0, false);
+                    board[i][j] = this.empty;
+
+                    if (moveVal > bestVal) {
+                        bestMove[0] = i;
+                        bestMove[1] = j;
+                        bestVal = moveVal;
+                    }
+                }
+            }
+        }
+
+        return bestMove;
     },
 
     printBoard : function(board) {

@@ -3,7 +3,6 @@ const { JsonDB } = require('node-json-db');
 const { Config } = require('node-json-db/dist/lib/JsonDBConfig');
 const TTTM = require('../tictactoe-model.js');
 const wait = require('util').promisify(setTimeout);
-// const jsoning = require('jsoning');
 
 module.exports = {
 	data: new SlashCommandBuilder()
@@ -28,19 +27,23 @@ module.exports = {
         const db = new JsonDB(new Config('db', true, false, '/'));
         const activeGame = db.getData('/' + interaction.member.id + '/activeGame');
         const board = TTTM.stringToArray(db.getData('/' + interaction.member.id + '/board'));
+        const difficulty = db.getData('/' + interaction.member.id + '/difficulty');
 
         if (activeGame) {
             const move = [interaction.options.getInteger('y'), interaction.options.getInteger('x')];
-            if (board[move[0]][move[1]] == '—') {
+            if (board[move[0]][move[1]] == TTTM.empty) {
                 board[move[0]][move[1]] = 'X';
                 db.push('/' + interaction.member.id + '/board', TTTM.arrayToString(board));
                 await interaction.reply({ content: TTTM.printBoard(board), ephemeral: true });
-                if (TTTM.checkForWin(board)) {
+                if (TTTM.checkForWin(board) == -10) {
+                    await wait(200);
                     await interaction.followUp({ content: 'You win!', ephemeral: true });
                     db.push('/' + interaction.member.id + '/activeGame', false);
+                    if (difficulty == 'smart') interaction.member.roles.add('922685936012251156').catch(console.error);
                     return;
                 }
                 if (TTTM.checkGameOver(board)) {
+                    await wait(200);
                     await interaction.followUp({ content: 'Tie game.', ephemeral: true });
                     db.push('/' + interaction.member.id + '/activeGame', false);
                     return;
@@ -48,16 +51,19 @@ module.exports = {
                 await wait(300);
                 await interaction.editReply({ content: TTTM.printBoard(board) + '\nI\'m thinking...', ephemeral: true });
                 await wait(1000);
-                const aiMove = TTTM.getAIMove(board);
+                let aiMove;
+                if (difficulty == 'smart') aiMove = TTTM.findBestAIMove(board); else aiMove = TTTM.getRandomAIMove(board);
                 board[aiMove[0]][aiMove[1]] = 'O';
                 db.push('/' + interaction.member.id + '/board', TTTM.arrayToString(board));
                 await interaction.followUp({ content: TTTM.printBoard(board), ephemeral: true });
-                if (TTTM.checkForWin(board)) {
+                if (TTTM.checkForWin(board) == 10) {
+                    await wait(200);
                     await interaction.followUp({ content: 'You lose!', ephemeral: true });
                     db.push('/' + interaction.member.id + '/activeGame', false);
                     return;
                 }
                 if (TTTM.checkGameOver(board)) {
+                    await wait(200);
                     await interaction.followUp({ content: 'Tie game.', ephemeral: true });
                     db.push('/' + interaction.member.id + '/activeGame', false);
                     return;
