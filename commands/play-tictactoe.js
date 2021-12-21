@@ -1,7 +1,7 @@
 const { SlashCommandBuilder } = require('@discordjs/builders');
 const { JsonDB } = require('node-json-db');
 const { Config } = require('node-json-db/dist/lib/JsonDBConfig');
-// const jsoning = require('jsoning');
+const TTTM = require('../tictactoe-model.js');
 
 module.exports = {
 	data: new SlashCommandBuilder()
@@ -14,10 +14,11 @@ module.exports = {
         } else {
             // const db = new jsoning('./db/boards.json');
             const db = new JsonDB(new Config('db', true, false, '/'));
+            const newBoard = '—————————';
 
-            await interaction.reply({ content: 'Use /move x y to enter your move. Top left is 0,0.', ephemeral: true });
+            await interaction.reply({ content: 'Use /move y x to enter your move. Top left is 0,0.\n' + TTTM.printBoard(TTTM.stringToArray(newBoard)), ephemeral: true });
             db.push('/' + interaction.member.id + '/activeGame', true);
-            db.push('/' + interaction.member.id + '/board', '—————————');
+            db.push('/' + interaction.member.id + '/board', newBoard);
             // interaction.member.roles.add('921418494774501438').catch(console.error);
         }
 	},
