@@ -39,7 +39,7 @@ module.exports = {
                     await wait(200);
                     await interaction.followUp({ content: 'You win!', ephemeral: true });
                     db.push('/' + interaction.member.id + '/activeGame', false);
-                    if (difficulty == 'smart') interaction.member.roles.add('922685936012251156').catch(console.error);
+                    if (difficulty == 'hard') interaction.member.roles.add('922685936012251156').catch(console.error);
                     return;
                 }
                 if (TTTM.checkGameOver(board)) {
@@ -52,7 +52,14 @@ module.exports = {
                 await interaction.editReply({ content: TTTM.printBoard(board) + '\nI\'m thinking...', ephemeral: true });
                 await wait(1000);
                 let aiMove;
-                if (difficulty == 'smart') aiMove = TTTM.findBestAIMove(board); else aiMove = TTTM.getRandomAIMove(board);
+                if (difficulty == 'easy') {
+                    aiMove = TTTM.getRandomAIMove(board);
+                } else if (difficulty == 'medium') {
+                    const prob = Math.random();
+                    if (prob < 0.9) aiMove = TTTM.findBestAIMove(board); else aiMove = TTTM.getRandomAIMove(board);
+                } else {
+                    aiMove = TTTM.findBestAIMove(board);
+                }
                 board[aiMove[0]][aiMove[1]] = 'O';
                 db.push('/' + interaction.member.id + '/board', TTTM.arrayToString(board));
                 await interaction.followUp({ content: TTTM.printBoard(board), ephemeral: true });

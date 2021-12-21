@@ -11,8 +11,9 @@ module.exports = {
             option.setName('difficulty')
                 .setDescription('sets whether the enemy AI plays randomly or not')
                 .setRequired(false)
-                .addChoice('smart', 'smart')
-                .addChoice('random', 'random')),
+                .addChoice('easy', 'easy')
+                .addChoice('medium', 'medium')
+                .addChoice('hard', 'hard')),
 	async execute(interaction) {
 
         if (interaction.member.roles.cache.has('922685936012251156')) {
@@ -26,7 +27,7 @@ module.exports = {
             db.push('/' + interaction.member.id + '/activeGame', true);
             db.push('/' + interaction.member.id + '/board', newBoard);
             let difficulty = interaction.options.getString('difficulty');
-            if (difficulty == null) difficulty = 'smart';
+            if (difficulty == null) difficulty = 'hard';
             db.push('/' + interaction.member.id + '/difficulty', difficulty);
             // interaction.member.roles.add('921418494774501438').catch(console.error);
         }

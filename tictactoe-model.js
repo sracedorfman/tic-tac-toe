@@ -62,7 +62,7 @@ const ticTacToeModel = {
     minimax : function(board, depth, isMax) {
         const score = this.checkForWin(board);
 
-        if (this.checkGameOver(board)) return score;
+        if (this.checkGameOver(board) || score != 0) return score;
 
         if (isMax) {
             let best = -1000;
@@ -75,7 +75,7 @@ const ticTacToeModel = {
                     }
                 }
             }
-            return best;
+            return best - depth;
         } else {
             let best = 1000;
             for (let i = 0; i < 3; i++) {
@@ -87,7 +87,7 @@ const ticTacToeModel = {
                     }
                 }
             }
-            return best;
+            return best + depth;
         }
     },
 
@@ -117,6 +117,7 @@ const ticTacToeModel = {
     printBoard : function(board) {
         let str = '';
         for (let i = 0; i < 3; i++) {
+            str += ' ';
             for (let j = 0; j < 3; j++) {
                 str += board[i][j];
                 if (j < 2) str += ' | ';
