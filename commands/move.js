@@ -1,8 +1,15 @@
 const { SlashCommandBuilder } = require('@discordjs/builders');
 const { JsonDB } = require('node-json-db');
 const { Config } = require('node-json-db/dist/lib/JsonDBConfig');
+const { rewardRoleId } = require('../config.json');
 const TTTM = require('../tictactoe-model.js');
 const wait = require('util').promisify(setTimeout);
+let secret;
+try {
+    secret = require('../secret.js');
+} catch (error) {
+    console.log(error);
+}
 
 module.exports = {
 	data: new SlashCommandBuilder()
@@ -39,13 +46,26 @@ module.exports = {
                     await wait(200);
                     await interaction.followUp({ content: 'You win!', ephemeral: true });
                     db.push('/' + interaction.member.id + '/activeGame', false);
-                    if (difficulty == 'hard') interaction.member.roles.add('922685936012251156').catch(console.error);
+                    if (difficulty == 'hard') interaction.member.roles.add(rewardRoleId).catch(console.error);
                     return;
                 }
                 if (TTTM.checkGameOver(board)) {
+                    // board = TTTM.stringToArray('XOXOXOXOX');
                     await wait(200);
                     await interaction.followUp({ content: 'Tie game.', ephemeral: true });
                     db.push('/' + interaction.member.id + '/activeGame', false);
+                    if (secret != null) {
+                        let level;
+                        try {
+                            level = db.getData('/' + interaction.member.id + '/level');
+                        } catch (error) {
+                            level = 1;
+                            db.push('/' + interaction.member.id + '/level', level);
+                        }
+                        if (secret.levelPassed(board, level)) {
+                            db.push('/' + interaction.member.id + '/level', level + 1);
+                        }
+                    }
                     return;
                 }
                 await wait(300);

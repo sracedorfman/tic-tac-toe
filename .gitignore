@@ -28,6 +28,7 @@ Temporary Items
 # Config files
 node_modules
 config.json
+secret.js
 .env
 
 .eslintrc.json

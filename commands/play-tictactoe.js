@@ -1,6 +1,7 @@
 const { SlashCommandBuilder } = require('@discordjs/builders');
 const { JsonDB } = require('node-json-db');
 const { Config } = require('node-json-db/dist/lib/JsonDBConfig');
+const { rewardRoleId } = require('../config.json');
 const TTTM = require('../tictactoe-model.js');
 
 module.exports = {
@@ -16,7 +17,7 @@ module.exports = {
                 .addChoice('hard', 'hard')),
 	async execute(interaction) {
 
-        if (interaction.member.roles.cache.has('922685936012251156')) {
+        if (interaction.member.roles.cache.has(rewardRoleId)) {
             await interaction.reply('You are already a tic tac toe god. If you wish to play once again, use /revokemyhonor');
         } else {
             // const db = new jsoning('./db/boards.json');
