@@ -26,9 +26,10 @@ Temporary Items
 .apdisk
 
 # Config files
-node_modules
+/node_modules
+npm-debug.log
 config.json
 secret.js
-.env
+/*.env
 
 .eslintrc.json
