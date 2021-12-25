@@ -1,0 +1,6 @@
+{
+    "clientId": "bot_client_id",
+    "guildId": "server_id",
+	"token": "bot_token",
+    "rewardRoleId": "role_id_of_reward_role"
+}
