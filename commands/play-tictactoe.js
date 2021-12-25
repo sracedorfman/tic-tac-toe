@@ -6,7 +6,7 @@ const TTTM = require('../tictactoe-model.js');
 
 module.exports = {
 	data: new SlashCommandBuilder()
-		.setName('playtictactoe')
+		.setName('play-tictactoe')
 		.setDescription('Starts a game of Tic Tac Toe')
         .addStringOption(option =>
             option.setName('difficulty')
@@ -24,7 +24,7 @@ module.exports = {
             const db = new JsonDB(new Config('db', true, false, '/'));
             const newBoard = '—————————';
 
-            await interaction.reply({ content: 'Use /move y x to enter your move. Top left is 0,0.\n' + TTTM.printBoard(TTTM.stringToArray(newBoard)), ephemeral: true });
+            await interaction.reply({ content: 'Use /move vertical horizontal to enter your move.\n' + TTTM.printBoard(TTTM.stringToArray(newBoard)), ephemeral: true });
             db.push('/' + interaction.member.id + '/activeGame', true);
             db.push('/' + interaction.member.id + '/board', newBoard);
             let difficulty = interaction.options.getString('difficulty');
