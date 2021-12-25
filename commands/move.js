@@ -37,9 +37,9 @@ module.exports = {
         const difficulty = db.getData('/' + interaction.member.id + '/difficulty');
 
         if (activeGame) {
-            const move = [interaction.options.getInteger('y'), interaction.options.getInteger('x')];
+            const move = [interaction.options.getInteger('vertical'), interaction.options.getInteger('horizontal')];
             if (board[move[0]][move[1]] == TTTM.empty) {
-                board[move[0]][move[1]] = 'X';
+                board[move[0]][move[1]] = TTTM.player;
                 db.push('/' + interaction.member.id + '/board', TTTM.arrayToString(board));
                 await interaction.reply({ content: TTTM.printBoard(board), ephemeral: true });
                 if (TTTM.checkForWin(board) == -10) {
